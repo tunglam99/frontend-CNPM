@@ -1,34 +1,48 @@
-<kt-portlet>
-  <kt-portlet-header [icon]="'fas fa-filter'" [title]="'Tìm kiếm'" [class]="'card-head-lg bgr-custom'" (click)="isCollapsed = !isCollapsed">
-    <ng-container ktPortletTools>
-      <i [hidden]="isCollapsed" class="fas fa-angle-double-down"></i>
-      <i [hidden]="!isCollapsed" class="fas fa-angle-double-up"></i>
-    </ng-container>
-  </kt-portlet-header>
-  <kt-portlet-body>
-    <div [ngbCollapse]="isCollapsed" class="card-body ">
-      <form class="row form-group" [formGroup]="form">
-        <div class="col-md-5 row align-items-center mt-2">
-          <label class="col-sm-3 col-md-3 pr-md-0 mt-2">Tổ bộ môn :</label>
-          <div class=" col-sm-8 ">
-            <input type="text" class="form-control mr-10" maxlength="100" placeholder="Nhập tên tổ bộ môn cần tìm ..." id="department" formControlName="department" />
-          </div>
+<div class="card-header bg-dark-o-20 d-flex justify-content-between">
+  <div class="mb-auto mt-auto">
+    <h3 style="margin-bottom: 0px"><i class="fa fa-list" style="font-size: larger; color: black"></i>Danh sách Khen thưởng </h3>
+  </div>
+  <div style="margin-top: 10px">
+    <button kendoButton type="button" [iconClass]="'fas fa-plus'" (click)="openModalAdd()"
+            style="background: #419197; color: white; font-size: medium; margin-right: 10px"></button>
+    <button kendoButton type="button" [iconClass]="'far fa-trash-alt'"
+            style="background: red; color: white; font-size: medium; margin-right: 25px"></button>
+  </div>
+</div>
+<div class="card-body">
+  <kendo-grid  *ngIf="isLoading$ | async" [data]="dataKT" [pageSize]="_pageSize" [pageable]="true" [kendoGridSelectBy]="'id'" [selectable]="{checkboxOnly : true}"  [skip]="skip"
+               [style]="{'border-radius': '25px'}">
+    <kendo-grid-checkbox-column class="text-center" [width]="45" [resizable]="false" [columnMenu]="false" showSelectAll="true">
+    </kendo-grid-checkbox-column>
+    <kendo-grid-column field="id" title="TT" [width]="45" editable="false">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">{{rowIndex + 1}}</ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column [width]="200" field="name" editor="text" title="Tên tổ bộ môn"></kendo-grid-column>
+    <kendo-grid-column [width]="200" field="luong" editor="text" title="Cán bộ quản lý">
+    </kendo-grid-column>
+    <kendo-grid-command-column title="Sửa" [width]="100">
+      <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem="dataItem">
+        <div class="d-flex" kendoTooltip>
+          <button title="Sửa" class="border-radius btn-custom btn-add h-30px m-auto pt-2px"  kendoButton [iconClass]="'fas fa-pencil-alt'"></button>
         </div>
-        <div class="col-md-5 row align-items-center  mt-2">
-
-          <label class="col-sm-3 pl-md-0 col-md-4">Cán bộ quản lý :</label>
-
-          <div class=" col-sm-8 ">
-            <input type="text" class="form-control" maxlength="100" placeholder="Nhập cán bộ quản lý bộ môn cần tìm ..." id="managerment" formControlName="managerment" />
-          </div>
+      </ng-template>
+    </kendo-grid-command-column>
+    <ng-template kendoPagerTemplate let-currentPage="currentPage" let-total="total" let-skip="skip" let-pageSize="pageSize">
+      <div class="d-lg-flex d-md-block justify-content-between w-100">
+        <div class="p-1 d-flex d-sm-flex justify-content-between">
+          <kendo-dropdownlist style="width: 60px;" [data]="pageSizes" [(ngModel)]="_pageSize" >
+          </kendo-dropdownlist>
+          <p class="m-0 pl-3 pt-2">Tổng số: {{total}}. Hiển thị {{skip + 1}} - {{pageSize * currentPage >= total ? total : pageSize * currentPage}}</p>
         </div>
-        <div class="col-md-2 d-flex justify-content-md-end  mt-2">
-          <button type="submit" class="btn btn-smas">
-            <i class="fas fa-filter"></i> Tìm kiếm
-          </button>
+        <div class="d-flex justify-content-center custom-mt-15">
+          <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+          <kendo-pager-numeric-buttons [buttonCount]="10"></kendo-pager-numeric-buttons>
+          <kendo-pager-next-buttons></kendo-pager-next-buttons>
         </div>
-
-      </form>
-    </div>
-  </kt-portlet-body>
-</kt-portlet>
+      </div>
+    </ng-template>
+    <ng-template kendoGridNoRecordsTemplate>
+      Không có dữ liệu
+    </ng-template>
+  </kendo-grid>
+</div>
