@@ -3,6 +3,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import validate = WebAssembly.validate;
 import {EmployeeService} from '../../service/employee.service';
+import {NotiService} from '../../service/notification.service';
 
 @Component({
   selector: 'kt-modal-add-edit',
@@ -14,11 +15,13 @@ export class ModalAddEditComponent implements OnInit {
   @Input() selectedItem: any;
   constructor(private _NgbActiveModal: NgbActiveModal,
               private fb: FormBuilder,
-              private employeeService: EmployeeService) { }
+              private employeeService: EmployeeService,
+  ) { }
   form: FormGroup
   submitted = false;
   ngOnInit(): void {
     this.form = this.fb.group({
+      id: new FormControl(''),
       email: new FormControl('', [Validators.required, Validators.maxLength(250), Validators.email]),
       password: new FormControl('', [Validators.required, Validators.maxLength(250)]),
       name: new FormControl('', [Validators.required, Validators.maxLength(250)]),
@@ -57,8 +60,25 @@ export class ModalAddEditComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
-    this.employeeService.createUserWithAccount(this.form.value).subscribe(() =>{
-      this.activeModal.close('create');
-    })
+    if (this.selectedItem) {
+      console.log(this.selectedItem)
+      const put = {
+        id: this.form.get('id').value,
+        email: this.form.get('email').value,
+        password: this.form.get('password').value,
+        name: this.form.get('name').value,
+        luong: this.form.get('luong').value
+      }
+      this.employeeService.updateEmployee(put,this.selectedItem.id).toPromise().then(res => {
+          this.activeModal.close('update');
+        // this.notiService.showNoti('Cập nhật thành công', 'success');
+        },
+      )
+    } else {
+      this.employeeService.createUserWithAccount(this.form.value).subscribe(() => {
+        this.activeModal.close('create');
+        // this.notiService.showNoti('Thêm mới thành công', 'success');
+      })
+    }
   }
 }
