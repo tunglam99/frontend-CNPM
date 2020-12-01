@@ -11,6 +11,7 @@
 
   <kendo-grid #table  *ngIf="isLoading$ | async"
                [data]="dataKT"
+               [sortable]="true"
                [pageSize]="pageSize"
                [skip]="skip"
                [pageable]="{
